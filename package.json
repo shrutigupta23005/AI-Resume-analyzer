@@ -1,0 +1,29 @@
+{
+  "name": "ai-resume-analyzer",
+  "version": "1.0.0",
+  "description": "AI-Powered Resume Analyzer - Full-Stack SaaS Application",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm run build"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.15.0"
+  },
+  "keywords": [
+    "resume",
+    "analyzer",
+    "ats",
+    "ai",
+    "react",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT"
+}
