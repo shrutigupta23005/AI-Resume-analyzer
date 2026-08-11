@@ -10,8 +10,14 @@ const mongoose = require('mongoose');
  * If that fails, automatically starts an in-memory MongoDB server
  * so the app works out of the box with zero external setup.
  */
+const ATLAS_DEFAULT_URI = 'mongodb+srv://muskangupta_db_user:vWYETaB0pH99jsAs@cluster0.ujmss9g.mongodb.net/resume-analyzer?retryWrites=true&w=majority';
+
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resume-analyzer';
+  let uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    uri = ATLAS_DEFAULT_URI;
+  }
 
   try {
     // Try connecting to the configured MongoDB URI
@@ -23,7 +29,12 @@ const connectDB = async () => {
     setupConnectionHandlers();
     return conn;
   } catch (error) {
-    console.warn(`⚠️  Could not connect to MongoDB at ${uri}`);
+    console.warn(`⚠️  Could not connect to MongoDB at ${uri}: ${error.message}`);
+
+    if (process.env.VERCEL) {
+      throw new Error(`MongoDB Connection Error: ${error.message}. Please verify MONGODB_URI in Vercel settings.`);
+    }
+
     console.log('🔄 Starting in-memory MongoDB server...');
 
     // Fall back to in-memory MongoDB
