@@ -7,8 +7,11 @@ const path = require('path');
 const fs = require('fs');
 const env = require('../config/env');
 
-// Ensure upload directory exists
-const uploadDir = path.resolve(env.UPLOAD_PATH);
+// Ensure upload directory exists. Relative paths are resolved from /server
+// so the app uses the same uploads folder no matter where node is started.
+const uploadDir = path.isAbsolute(env.UPLOAD_PATH)
+  ? env.UPLOAD_PATH
+  : path.resolve(__dirname, '..', env.UPLOAD_PATH);
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -32,8 +35,10 @@ const storage = multer.diskStorage({
 // Only allow PDF files
 // ---------------------
 const fileFilter = (req, file, cb) => {
-  // Check MIME type
-  if (file.mimetype === 'application/pdf') {
+  const ext = path.extname(file.originalname).toLowerCase();
+  const allowedMimeTypes = ['application/pdf', 'application/x-pdf', 'application/octet-stream'];
+
+  if (ext === '.pdf' && allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new Error('Only PDF files are allowed. Please upload a PDF resume.'), false);
